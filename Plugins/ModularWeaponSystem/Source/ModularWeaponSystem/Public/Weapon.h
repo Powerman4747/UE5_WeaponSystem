@@ -27,7 +27,13 @@ public:
 	void Initialize(UWeaponDataAsset* InWeaponData);
 	
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	void TryUse(struct FHitResult& Hit);
+	void OnActionPressed();
+	
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	void OnActionReleased();
+	
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	void OnActionHeld(float dt);
 
 	UReloadComponent* GetReloadComponent() const { return ReloadComponent; }
 protected:

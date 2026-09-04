@@ -49,7 +49,17 @@ void AWeapon::Initialize(UWeaponDataAsset* InWeaponData)
 	}
 }
 
-void AWeapon::TryUse(FHitResult& Hit)
+void AWeapon::OnActionPressed()
 {
-	WeaponActionComponent->TryUse(Hit, this);
+	WeaponActionComponent->OnActionPressed(this);
+}
+
+void AWeapon::OnActionReleased()
+{
+	WeaponActionComponent->OnActionReleased();
+}
+
+void AWeapon::OnActionHeld(float dt)
+{
+	WeaponActionComponent->OnActionHeld(dt, this);
 }

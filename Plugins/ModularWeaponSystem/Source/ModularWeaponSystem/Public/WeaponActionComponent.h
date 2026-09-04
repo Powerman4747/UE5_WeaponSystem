@@ -14,7 +14,9 @@ class MODULARWEAPONSYSTEM_API UWeaponActionComponent : public UActorComponent
 	GENERATED_BODY()
 	
 public:
-	virtual bool TryUse(struct FHitResult& hit, AWeapon* OwningWeapon) PURE_VIRTUAL(URangedActionComponent::TryUse, return false;);
+	virtual bool OnActionPressed(AWeapon* OwningWeapon) PURE_VIRTUAL(URangedActionComponent::TryUse, return false;);
+	virtual bool OnActionHeld(float deltaTime, AWeapon* OwningWeapon) PURE_VIRTUAL(URangedActionComponent::TryUse, return false;);
+	virtual void OnActionReleased() PURE_VIRTUAL(URangedActionComponent::TryUse, return;);
 };
 
 UCLASS(Abstract)
@@ -22,7 +24,9 @@ class MODULARWEAPONSYSTEM_API URangedActionComponent : public UWeaponActionCompo
 {
 	GENERATED_BODY()
 public:
-	virtual bool TryUse(struct FHitResult& hit, AWeapon* OwningWeapon) override PURE_VIRTUAL(URangedActionComponent::TryUse, return false;);
+	virtual bool OnActionPressed(AWeapon* OwningWeapon) override { return false; }
+	virtual bool OnActionHeld(float deltaTime, AWeapon* OwningWeapon) override { return false; }
+	virtual void OnActionReleased() override { }
 };
 
 UCLASS()
@@ -30,10 +34,10 @@ class MODULARWEAPONSYSTEM_API USingleShotAction : public URangedActionComponent
 {
 	GENERATED_BODY()
 public:
-	virtual bool TryUse(struct FHitResult& hit, AWeapon* OwningWeapon) override final;
-	
+	virtual bool OnActionPressed(AWeapon* OwningWeapon) override;
+	virtual void OnActionReleased() override;
 private:
-	float LastFireTime = 0.f;
+	bool bReleased = true;
 };
 
 UCLASS()
@@ -41,5 +45,7 @@ class MODULARWEAPONSYSTEM_API UMeleeActionComponent : public UWeaponActionCompon
 {
 	GENERATED_BODY()	
 public:
-	virtual bool TryUse(struct FHitResult& hit, AWeapon* OwningWeapon) override PURE_VIRTUAL(URangedActionComponent::TryUse, return false;);
+	virtual bool OnActionPressed(AWeapon* OwningWeapon) override { return false; }
+	virtual bool OnActionHeld(float deltaTime, AWeapon* OwningWeapon) override { return false; }
+	virtual void OnActionReleased() override { }
 };

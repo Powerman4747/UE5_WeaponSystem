@@ -6,23 +6,17 @@
 #include "Weapon.h"
 #include "WeaponDataAsset.h"
 
-bool USingleShotAction::TryUse(struct FHitResult& Hit, AWeapon* OwningWeapon)
+bool USingleShotAction::OnActionPressed(AWeapon* OwningWeapon)
 {
-	if (!OwningWeapon || !OwningWeapon->WeaponData)
+	if (!OwningWeapon || !OwningWeapon->WeaponData || !bReleased)
 	{
 		return false;
 	}
+	
+	bReleased = false;
 	
 	URangedWeaponDataAsset* WeaponData = Cast<URangedWeaponDataAsset>(OwningWeapon->WeaponData);
-	
 	if(!WeaponData)
-	{
-		return false;
-	}
-	
-	const float CurrentTime = OwningWeapon->GetWorld()->GetTimeSeconds();
-	const float FireInterval = FMath::Max(WeaponData->FireRate, 0.0001f);
-	if (CurrentTime - LastFireTime < FireInterval)
 	{
 		return false;
 	}
@@ -39,12 +33,16 @@ bool USingleShotAction::TryUse(struct FHitResult& Hit, AWeapon* OwningWeapon)
 		OwningWeapon->GetReloadComponent()->ConsumeAmmo(1);
 	}
 	
-	LastFireTime = CurrentTime;
-	
 	// Maybe moved more general
 	FVector StartPoint = FVector(0,0,5); // replace by socket
 	FVector EndPoint = StartPoint + OwningWeapon->GetActorForwardVector() * WeaponData->Range;
+	FHitResult Hit;
 	GetWorld()->LineTraceSingleByChannel(Hit, StartPoint, EndPoint, ECollisionChannel::ECC_Visibility);
 	
 	return true;
+}
+
+void USingleShotAction::OnActionReleased()
+{
+	bReleased = true;
 }
