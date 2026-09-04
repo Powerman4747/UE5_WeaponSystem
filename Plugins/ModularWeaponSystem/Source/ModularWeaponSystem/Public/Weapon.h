@@ -7,6 +7,8 @@
 #include "Weapon.generated.h"
 
 class UWeaponDataAsset;
+class UReloadComponent;
+class UWeaponActionComponent;
 
 UCLASS()
 class MODULARWEAPONSYSTEM_API AWeapon : public AActor
@@ -14,23 +16,26 @@ class MODULARWEAPONSYSTEM_API AWeapon : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	AWeapon();
+	
+	virtual void Tick(float DeltaTime) override;
 	
 	UPROPERTY(EditDefaultsOnly)
 	UWeaponDataAsset* WeaponData;
-
-	// UPROPERTY(Instanced, EditDefaultsOnly)
-	//UFireModeComponent* FireMode;UFUNCTION(BlueprintCallable, Category = Weapon)
 	
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	void Initialize(UWeaponDataAsset* InWeaponData);
+	
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	void TryUse(struct FHitResult& Hit);
 
+	UReloadComponent* GetReloadComponent() const { return ReloadComponent; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+private:
+	UReloadComponent* ReloadComponent = nullptr;
+	UWeaponActionComponent* WeaponActionComponent = nullptr;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 };

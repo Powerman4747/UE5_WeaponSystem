@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ReloadComponent.h"
+#include "WeaponActionComponent.h"
 #include "Runtime/Engine/Classes/Engine/DataAsset.h"
 #include "WeaponDataAsset.generated.h"
 
@@ -13,7 +15,7 @@
 static const FPrimaryAssetType WeaponAssetType = TEXT("Weapon");
 
 
-UCLASS(ABSTRACT)
+UCLASS(Abstract)
 class MODULARWEAPONSYSTEM_API UWeaponDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
@@ -22,7 +24,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Info, meta = (DisplayPriority = -1))
 	FText DisplayName = FText::FromString("");
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Info)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Info, meta = (DisplayPriority = 0))
 	float Damage = 0.0f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Assets, meta = (AssetBundles = "WeaponAssets"))
@@ -32,6 +34,8 @@ public:
 	{
 		return FPrimaryAssetId(WeaponAssetType, GetFName());
 	}
+	
+	virtual TSubclassOf<UWeaponActionComponent> GetActionComponent() const PURE_VIRTUAL(UWeaponDataAsset::GetActionComponent, return nullptr;);
 };
 
 UCLASS()
@@ -41,19 +45,31 @@ class MODULARWEAPONSYSTEM_API URangedWeaponDataAsset : public UWeaponDataAsset
 	
 public:	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Info)
-	float FireRate = 0.f;
+	float FireRate = 0.1f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Info)
-	bool IsHitscan = true;
+	int MaxMagazines = 1;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Info, meta = (EditCondition = "IsHitscan"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Info)
+	int MagazineSize = 30;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Info)
+	float ReloadTime = 1.f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Info)
 	float Range = 100.f;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Assets, meta = (AssetBundles = "WeaponAssets", EditCondition = "!IsHitscan"))
-	TSoftObjectPtr<UStaticMesh> BulletMesh;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components, meta = (DisallowAbstractClasses))
 	TSubclassOf<URangedActionComponent> ActionComponent;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components, meta = (DisallowAbstractClasses))
+	TSubclassOf<UReloadComponent> ReloadComponent;
+	
+	virtual TSubclassOf<UWeaponActionComponent> GetActionComponent() const override
+	{
+		return ActionComponent;
+	}
+
 };
 
 UCLASS()
@@ -65,4 +81,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components)
 	TSubclassOf<UMeleeActionComponent> ActionComponent;
 	
+	virtual TSubclassOf<UWeaponActionComponent> GetActionComponent() const override
+	{
+		return ActionComponent;
+	}
 };

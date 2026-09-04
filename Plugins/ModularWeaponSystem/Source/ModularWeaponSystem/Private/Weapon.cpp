@@ -3,6 +3,8 @@
 
 #include "../Public/Weapon.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
+#include "../Public/WeaponDataAsset.h"
+#include "../Public/WeaponActionComponent.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -11,22 +13,43 @@ AWeapon::AWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-// Called when the game starts or when spawned
+void AWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
-void AWeapon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void AWeapon::Initialize(UWeaponDataAsset* InWeaponData)
 {
+	if (!InWeaponData) return;
+	
 	WeaponData = InWeaponData;
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Hello Viewport!"));
+	
+	const auto ActionComponent = WeaponData->GetActionComponent();	
+	if (ActionComponent)
+	{
+		WeaponActionComponent = NewObject<UWeaponActionComponent>(this, ActionComponent);
+		WeaponActionComponent->RegisterComponent();
+	}
+	
+	const auto* RangedData = Cast<URangedWeaponDataAsset>(WeaponData);	
+	if (RangedData)
+	{
+		if (RangedData->ReloadComponent)
+		{
+			ReloadComponent = NewObject<UReloadComponent>(this, RangedData->ReloadComponent);
+			ReloadComponent->RegisterComponent();
+			ReloadComponent->TryReload(this); // maybe move to init function for mag initialization
+		}
+	}
+}
 
+void AWeapon::TryUse(FHitResult& Hit)
+{
+	WeaponActionComponent->TryUse(Hit, this);
 }
