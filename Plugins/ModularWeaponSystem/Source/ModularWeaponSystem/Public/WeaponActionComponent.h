@@ -27,6 +27,8 @@ public:
 	virtual bool OnActionPressed(AWeapon* OwningWeapon) override { return false; }
 	virtual bool OnActionHeld(float deltaTime, AWeapon* OwningWeapon) override { return false; }
 	virtual void OnActionReleased() override { }
+protected:
+	bool Reload(AWeapon* OwningWeapon);
 };
 
 UCLASS()
@@ -38,6 +40,16 @@ public:
 	virtual void OnActionReleased() override;
 private:
 	bool bReleased = true;
+};
+
+UCLASS()
+class MODULARWEAPONSYSTEM_API UAutomaticShotAction : public URangedActionComponent
+{
+	GENERATED_BODY()
+public:
+	virtual bool OnActionHeld(float deltaTime, AWeapon* OwningWeapon) override;
+private:
+	float LastFire = 0.f;
 };
 
 UCLASS()

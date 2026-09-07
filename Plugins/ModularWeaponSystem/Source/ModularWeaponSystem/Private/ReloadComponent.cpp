@@ -11,7 +11,6 @@ void UMagazineComponent::ConsumeAmmo(int Amount)
 {
 	CurrentAmmo = FMath::Max(0, CurrentAmmo - Amount);
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::FromInt(CurrentAmmo));
-
 }
 
 bool UMagazineComponent::CanReload(AWeapon* OwningWeapon)

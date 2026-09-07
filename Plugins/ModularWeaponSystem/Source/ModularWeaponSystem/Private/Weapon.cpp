@@ -10,6 +10,10 @@
 AWeapon::AWeapon()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	auto MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	MeshComponent->SetupAttachment(RootComponent);
 	PrimaryActorTick.bCanEverTick = true;
 }
 
