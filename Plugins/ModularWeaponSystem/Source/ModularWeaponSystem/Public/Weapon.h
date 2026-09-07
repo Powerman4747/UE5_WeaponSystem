@@ -9,8 +9,9 @@
 class UWeaponDataAsset;
 class UReloadComponent;
 class UWeaponActionComponent;
+class UWeaponCollisionComponent;
 
-UCLASS()
+UCLASS(BlueprintType, BlueprintType)
 class MODULARWEAPONSYSTEM_API AWeapon : public AActor
 {
 	GENERATED_BODY()
@@ -34,14 +35,18 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	void OnActionHeld(float dt);
-
+	
 	UReloadComponent* GetReloadComponent() const { return ReloadComponent; }
+	
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	UWeaponCollisionComponent* GetCollisionComponent() const { return CollisionComponent; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 private:
 	UReloadComponent* ReloadComponent = nullptr;
-	UWeaponActionComponent* WeaponActionComponent = nullptr;
-
+	UWeaponActionComponent* ActionComponent = nullptr;
+	UWeaponCollisionComponent* CollisionComponent = nullptr;
 };

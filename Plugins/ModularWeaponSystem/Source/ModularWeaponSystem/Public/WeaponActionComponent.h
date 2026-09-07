@@ -52,7 +52,7 @@ private:
 	float LastFire = 0.f;
 };
 
-UCLASS()
+UCLASS(Abstract)
 class MODULARWEAPONSYSTEM_API UMeleeActionComponent : public UWeaponActionComponent
 {
 	GENERATED_BODY()	

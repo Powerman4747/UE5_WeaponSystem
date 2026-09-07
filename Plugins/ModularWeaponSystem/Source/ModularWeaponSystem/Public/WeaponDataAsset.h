@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ReloadComponent.h"
 #include "WeaponActionComponent.h"
+#include "WeaponCollisionComponent.h"
 #include "Runtime/Engine/Classes/Engine/DataAsset.h"
 #include "WeaponDataAsset.generated.h"
 
@@ -36,6 +37,7 @@ public:
 	}
 	
 	virtual TSubclassOf<UWeaponActionComponent> GetActionComponent() const PURE_VIRTUAL(UWeaponDataAsset::GetActionComponent, return nullptr;);
+	virtual TSubclassOf<UWeaponCollisionComponent> GetCollisionComponent() const PURE_VIRTUAL(UWeaponDataAsset::GetCollisionComponent, return nullptr;);
 };
 
 UCLASS()
@@ -65,9 +67,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components, meta = (DisallowAbstractClasses))
 	TSubclassOf<UReloadComponent> ReloadComponent;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components)
+	TSubclassOf<URangedCollisionComponent> CollisionComponent = URangedCollisionComponent::StaticClass();
+	
 	virtual TSubclassOf<UWeaponActionComponent> GetActionComponent() const override
 	{
 		return ActionComponent;
+	}
+	
+	virtual TSubclassOf<UWeaponCollisionComponent> GetCollisionComponent() const override
+	{
+		return CollisionComponent;
 	}
 
 };
@@ -81,8 +91,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components)
 	TSubclassOf<UMeleeActionComponent> ActionComponent;
 	
+	// CollisionComponent
+	
 	virtual TSubclassOf<UWeaponActionComponent> GetActionComponent() const override
 	{
 		return ActionComponent;
+	}
+	
+	virtual TSubclassOf<UWeaponCollisionComponent> GetCollisionComponent() const override
+	{
+		return nullptr;
 	}
 };

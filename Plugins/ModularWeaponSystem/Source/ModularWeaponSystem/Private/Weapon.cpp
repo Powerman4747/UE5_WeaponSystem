@@ -25,7 +25,6 @@ void AWeapon::Tick(float DeltaTime)
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void AWeapon::Initialize(UWeaponDataAsset* InWeaponData)
@@ -34,13 +33,33 @@ void AWeapon::Initialize(UWeaponDataAsset* InWeaponData)
 	
 	WeaponData = InWeaponData;
 	
-	const auto ActionComponent = WeaponData->GetActionComponent();	
-	if (ActionComponent)
+	const auto WeaponActionComponent = WeaponData->GetActionComponent();	
+	if (WeaponActionComponent)
 	{
-		WeaponActionComponent = NewObject<UWeaponActionComponent>(this, ActionComponent);
-		WeaponActionComponent->RegisterComponent();
+		ActionComponent = NewObject<UWeaponActionComponent>(this, WeaponActionComponent);
+		ActionComponent->RegisterComponent();
 	}
 	
+	const auto WeaponCollisionComponent = WeaponData->GetCollisionComponent();	
+	if (WeaponCollisionComponent)
+	{
+		CollisionComponent = NewObject<UWeaponCollisionComponent>(this, WeaponCollisionComponent);
+		CollisionComponent->RegisterComponent();
+	}
+	else
+	{
+		TSubclassOf<UWeaponCollisionComponent> CollisionComp;
+
+		if (WeaponData->IsA<URangedWeaponDataAsset>())      CollisionComp = URangedCollisionComponent::StaticClass();
+		else if (WeaponData->IsA<UMeleeWeaponDataAsset>())  CollisionComp = nullptr; // UMeleeCollisionComponent::StaticClass(); not implemented yet
+
+		if (!CollisionComp) return;
+
+		CollisionComponent = NewObject<UWeaponCollisionComponent>(this, CollisionComp);
+		CollisionComponent->RegisterComponent();
+	}
+	
+	// Weapon type specific
 	const auto* RangedData = Cast<URangedWeaponDataAsset>(WeaponData);	
 	if (RangedData)
 	{
@@ -55,15 +74,15 @@ void AWeapon::Initialize(UWeaponDataAsset* InWeaponData)
 
 void AWeapon::OnActionPressed()
 {
-	WeaponActionComponent->OnActionPressed(this);
+	ActionComponent->OnActionPressed(this);
 }
 
 void AWeapon::OnActionReleased()
 {
-	WeaponActionComponent->OnActionReleased();
+	ActionComponent->OnActionReleased();
 }
 
 void AWeapon::OnActionHeld(float dt)
 {
-	WeaponActionComponent->OnActionHeld(dt, this);
+	ActionComponent->OnActionHeld(dt, this);
 }

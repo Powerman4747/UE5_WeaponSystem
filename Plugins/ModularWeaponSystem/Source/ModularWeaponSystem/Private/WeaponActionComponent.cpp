@@ -36,21 +36,8 @@ bool USingleShotAction::OnActionPressed(AWeapon* OwningWeapon)
 		OwningWeapon->GetReloadComponent()->ConsumeAmmo(1);
 	}
 	
-	// Maybe moved more general
-	FVector StartPoint = OwningWeapon->GetActorTransform().GetTranslation(); // replace by socket
-	FVector EndPoint = StartPoint + OwningWeapon->GetActorForwardVector() * WeaponData->Range;
-	FHitResult Hit;
-	GetWorld()->LineTraceSingleByChannel(Hit, StartPoint, EndPoint, ECollisionChannel::ECC_Visibility);
-	DrawDebugLine(
-		GetWorld(),
-		StartPoint,
-		EndPoint,
-		FColor::Red,
-		false,      
-		10.0f,      // duration in seconds
-		0,   
-		5.0f        // thickness
-	);
+	TArray<FHitResult> OutHits = TArray<FHitResult>();
+	OwningWeapon->GetCollisionComponent()->DetectHit(OwningWeapon, OutHits);
 	return true;
 }
 
